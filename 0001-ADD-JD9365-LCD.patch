@@ -1,0 +1,392 @@
+From 2085266f96102ffeda5889834b28f064c63aaecd Mon Sep 17 00:00:00 2001
+From: kobey <xiong.yang@3nod.com.cn>
+Date: Wed, 20 Feb 2019 19:48:36 +0800
+Subject: [PATCH] ADD JD9365: starry&kd101n89 LCD
+
+Change-Id: I207d296f45ef72796658e27bbf2db67f018b252a
+Signed-off-by: kobey <xiong.yang@3nod.com.cn>
+---
+ arch/arm64/boot/dts/qcom/Makefile                  |   1 +
+ .../boot/dts/qcom/apq8053-lite-dragon-v2.2.4.dts   |  28 +++
+ .../boot/dts/qcom/apq8053-lite-dragon-v2.2.4.dtsi  | 206 +++++++++++++++++++++
+ .../boot/dts/qcom/dsi-panel-jd9365-800p-video.dtsi |  82 ++++++++
+ arch/arm64/boot/dts/qcom/msm8953-mdss-panels.dtsi  |  10 +-
+ 5 files changed, 326 insertions(+), 1 deletion(-)
+ create mode 100644 arch/arm64/boot/dts/qcom/apq8053-lite-dragon-v2.2.4.dts
+ create mode 100644 arch/arm64/boot/dts/qcom/apq8053-lite-dragon-v2.2.4.dtsi
+ create mode 100644 arch/arm64/boot/dts/qcom/dsi-panel-jd9365-800p-video.dtsi
+
+diff --git a/arch/arm64/boot/dts/qcom/Makefile b/arch/arm64/boot/dts/qcom/Makefile
+index 09f9f6641842..d001c9cc2b52 100644
+--- a/arch/arm64/boot/dts/qcom/Makefile
++++ b/arch/arm64/boot/dts/qcom/Makefile
+@@ -491,6 +491,7 @@ dtb-$(CONFIG_ARCH_MSM8953) += apq8053-cdp.dtb \
+ 	apq8053-lite-dragon-v2.2.1.dtb \
+ 	apq8053-lite-dragon-v2.2.2.dtb \
+ 	apq8053-lite-dragon-v2.2.3.dtb \
++	apq8053-lite-dragon-v2.2.4.dtb \
+ 	apq8053-lite-dragon-v2.3.dtb \
+ 	apq8053-lite-dragon-v2.4.dtb \
+ 	apq8053-mtp.dtb \
+diff --git a/arch/arm64/boot/dts/qcom/apq8053-lite-dragon-v2.2.4.dts b/arch/arm64/boot/dts/qcom/apq8053-lite-dragon-v2.2.4.dts
+new file mode 100644
+index 000000000000..a7d260476d1a
+--- /dev/null
++++ b/arch/arm64/boot/dts/qcom/apq8053-lite-dragon-v2.2.4.dts
+@@ -0,0 +1,28 @@
++/*
++ * Copyright (c) 2019, The Linux Foundation. All rights reserved.
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 and
++ * only version 2 as published by the Free Software Foundation.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ */
++
++/dts-v1/;
++
++#include "apq8053-lite.dtsi"
++#include "apq8053-lite-dragon-v2.2.4.dtsi"
++
++/ {
++	model = "Qualcomm Technologies, Inc. APQ8053 DragonBoard V2.2.4";
++	compatible = "qcom,apq8053-lite-dragonboard", "qcom,apq8053",
++			"qcom,dragonboard";
++	qcom,board-id = <0x01010620 0>;
++};
++
++&blsp2_uart0 {
++	status = "okay";
++};
+diff --git a/arch/arm64/boot/dts/qcom/apq8053-lite-dragon-v2.2.4.dtsi b/arch/arm64/boot/dts/qcom/apq8053-lite-dragon-v2.2.4.dtsi
+new file mode 100644
+index 000000000000..70b4e9c7cce1
+--- /dev/null
++++ b/arch/arm64/boot/dts/qcom/apq8053-lite-dragon-v2.2.4.dtsi
+@@ -0,0 +1,206 @@
++/*
++ * Copyright (c) 2019, The Linux Foundation. All rights reserved.
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 and
++ * only version 2 as published by the Free Software Foundation.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ */
++
++#include "apq8053-lite-dragon.dtsi"
++
++&rpm_bus {
++	rpm-regulator-ldoa10 {
++		status = "okay";
++		pm8953_l10: regulator-l10 {
++			regulator-min-microvolt = <2850000>;
++			regulator-max-microvolt = <2850000>;
++			qcom,init-voltage = <2850000>;
++			status = "okay";
++		};
++	};
++};
++
++&i2c_3 {
++	status = "okay";
++	/delete-node/ focaltech@38;
++	gt9xx-i2c@14 {
++		compatible = "goodix,gt9xx";
++		reg = <0x14>;
++		status = "okay";
++		vdd_ana-supply = <&pm8953_l10>;
++		vcc_i2c-supply = <&pm8953_l6>;
++		interrupt-parent = <&tlmm>;
++		interrupts = <65 0x2008>;
++		pinctrl-names = "gdix_ts_int_default", "gdix_ts_int_output_low", "gdix_ts_int_output_high", "gdix_ts_int_input",
++						"gdix_ts_rst_default", "gdix_ts_rst_output_low", "gdix_ts_rst_output_high", "gdix_ts_rst_input";
++		pinctrl-0 = <&ts_int_default>;
++		pinctrl-1 = <&ts_int_output_low>;
++		pinctrl-2 = <&ts_int_output_high>;
++		pinctrl-3 = <&ts_int_input>;
++		pinctrl-4 = <&ts_rst_default>;
++		pinctrl-5 = <&ts_rst_output_low>;
++		pinctrl-6 = <&ts_rst_output_high>;
++		pinctrl-7 = <&ts_rst_input>;
++		reset-gpios = <&tlmm 64 0x00>;
++		irq-gpios = <&tlmm 65 0x2008>;
++		irq-flags = <2>;
++		touchscreen-max-id = <11>;
++		touchscreen-size-x = <800>;
++		touchscreen-size-y = <1280>;
++		touchscreen-max-w = <1024>;
++		touchscreen-max-p = <1024>;
++		goodix,type-a-report = <0>;
++		goodix,driver-send-cfg = <1>;
++		goodix,wakeup-with-reset = <0>;
++		goodix,resume-in-workqueue = <0>;
++		goodix,int-sync = <1>;
++		goodix,swap-x2y = <0>;
++		goodix,esd-protect = <1>;
++		goodix,pen-suppress-finger = <0>;
++		goodix,auto-update = <1>;
++		goodix,auto-update-cfg = <0>;
++		goodix,power-off-sleep = <0>;
++		goodix,cfg-group0 = [
++                       42 20 03 00 05 0A 35 10 22 08 32 0D 50 3C 0A 04
++                       01 01 00 B4 11 11 44 15 19 1B 14 95 35 FF 3A 3C
++                       39 13 00 00 00 98 03 1C 00 00 00 00 03 00 00 00
++                       00 80 0A 37 46 40 E5 52 23 28 00 04 81 38 00 7F
++                       3B 00 7D 3E 00 7C 41 00 7A 44 0C 7A 00 50 33 50
++                       0B 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00
++                       00 00 00 00 00 00 00 55 00 01 00 00 02 00 00 00
++                       1D 1C 1B 1A 19 18 17 16 15 14 13 12 11 10 0F 0E
++                       0D 0C 0B 0A 09 08 07 06 05 04 03 02 01 00 2A 29
++                       28 27 26 25 24 23 22 21 20 1F 1E 1D 1C 1B 19 18
++                       17 16 15 14 13 12 11 10 0F 0E 0D 0C 0B 0A 09 08
++                       07 06 05 04 03 02 01 00 33 01
++		];
++
++		goodix,cfg-group2 = [
++                       42 20 03 00 05 0A 35 10 22 08 32 0D 50 32 0A 04
++                       01 01 00 B4 11 11 44 2B 31 36 28 95 35 FF 3E 40
++                       39 13 00 00 00 DA 03 1C 00 00 00 00 03 00 00 00
++                       00 80 0A 32 42 40 E5 52 23 28 00 04 7D 33 00 7D
++                       36 00 7E 39 00 7F 3C 00 80 40 0C 80 00 50 33 50
++                       0B 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00
++                       00 00 00 00 00 00 00 55 00 01 00 00 02 00 00 00
++                       1D 1C 1B 1A 19 18 17 16 15 14 13 12 11 10 0F 0E
++                       0D 0C 0B 0A 09 08 07 06 05 04 03 02 01 00 2A 29
++                       28 27 26 25 24 23 22 21 20 1F 1E 1D 1C 1B 19 18
++                       17 16 15 14 13 12 11 10 0F 0E 0D 0C 0B 0A 09 08
++                       07 06 05 04 03 02 01 00 AD 01
++		];
++	};
++};
++
++&mdss_dsi {
++	hw-config = "single_dsi";
++};
++
++&mdss_dsi0 {
++	qcom,dsi-pref-prim-pan = <&dsi_jd9365_800p_video>;
++	pinctrl-names = "mdss_default", "mdss_sleep";
++	pinctrl-0 = <&mdss_dsi_active &mdss_te_active &mdss_dsi_gpio>;
++	pinctrl-1 = <&mdss_dsi_suspend &mdss_te_suspend &mdss_dsi_gpio>;
++
++	/delete-property/ vdd-supply;
++	vddio-supply = <&pm8953_l6>;
++	lab-supply = <&lab_regulator>;
++	ibb-supply = <&ibb_regulator>;
++
++	qcom,platform-te-gpio = <&tlmm 24 0>;
++	qcom,platform-reset-gpio = <&tlmm 61 0>;
++	qcom,ext_vdd-gpio = <&tlmm 100 0>;
++	qcom,platform-bklight-en-gpio = <&tlmm 95 0>;
++
++	qcom,platform-lane-config = [00 00 ff 0f
++				00 00 ff 0f
++				00 00 ff 0f
++				00 00 ff 0f
++				00 00 ff 8f];
++};
++&mdss_dsi1 {
++	status = "disabled";
++};
++
++&labibb {
++	status = "ok";
++	qpnp,qpnp-labibb-mode = "lcd";
++};
++
++&wled {
++	qcom,cons-sync-write-delay-us = <1000>;
++	qcom,led-strings-list = [00 01 02 03];
++};
++
++&eeprom0 {
++	gpios = <&tlmm 26 0>,
++		<&tlmm 40 0>,
++		<&tlmm 118 0>,
++		<&tlmm 119 0>,
++		<&tlmm 39 0>;
++	qcom,gpio-vdig = <3>;
++	qcom,gpio-vana = <4>;
++	qcom,gpio-req-tbl-num = <0 1 2 3 4>;
++	qcom,gpio-req-tbl-flags = <1 0 0 0 0>;
++	qcom,gpio-req-tbl-label = "CAMIF_MCLK0",
++			"CAM_RESET0",
++			"CAM_VDIG",
++			"CAM_VANA",
++			"CAM_STANDBY0";
++};
++
++&pm8953_mpps {
++	mpp@a300 {
++		/* MPP4 - CASE_THERM config */
++		qcom,mode = <4>; /* AIN input */
++		qcom,invert = <1>; /* Enable MPP */
++		qcom,ain-route = <3>; /* AMUX 8 */
++		qcom,master-en = <1>;
++		qcom,src-sel = <0>; /* Function constant */
++	};
++};
++
++&pm8953_vadc {
++	chan@13 {
++		label = "case_therm";
++		reg = <0x13>;
++		qcom,decimation = <0>;
++		qcom,pre-div-channel-scaling = <0>;
++		qcom,calibration-type = "ratiometric";
++		qcom,scale-function = <2>;
++		qcom,hw-settle-time = <2>;
++		qcom,fast-avg-setup = <0>;
++		qcom,vadc-thermal-node;
++	};
++};
++
++&camera0 {
++	qcom,mount-angle = <270>;
++	gpios = <&tlmm 26 0>,
++		<&tlmm 40 0>,
++		<&tlmm 39 0>,
++		<&tlmm 118 0>,
++		<&tlmm 119 0>;
++	qcom,gpio-vdig = <3>;
++	qcom,gpio-vana = <4>;
++	qcom,gpio-req-tbl-num = <0 1 2 3 4>;
++	qcom,gpio-req-tbl-flags = <1 0 0 0 0>;
++	qcom,gpio-req-tbl-label = "CAMIF_MCLK0",
++			"CAM_RESET0",
++			"CAM_STANDBY0",
++			"CAM_VDIG",
++			"CAM_VANA";
++};
++
++&camera1 {
++	qcom,mount-angle = <270>;
++};
++
++&camera2{
++	qcom,mount-angle = <270>;
++};
+diff --git a/arch/arm64/boot/dts/qcom/dsi-panel-jd9365-800p-video.dtsi b/arch/arm64/boot/dts/qcom/dsi-panel-jd9365-800p-video.dtsi
+new file mode 100644
+index 000000000000..6125a689ead3
+--- /dev/null
++++ b/arch/arm64/boot/dts/qcom/dsi-panel-jd9365-800p-video.dtsi
+@@ -0,0 +1,82 @@
++/* Novatek Android Driver Sample Code for Novatek chipset
++*
++* Copyright (C) 2019 Novatek Microelectronics Corp.
++*
++* This software is licensed under the terms of the GNU General Public
++* License version 2, as published by the Free Software Foundation, and
++* may be copied, distributed, and modified under those terms.
++*
++* This program is distributed in the hope that it will be useful,
++* but WITHOUT ANY WARRANTY; without even the implied warranty of
++* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++* GNU General Public License for more details.
++*
++*/
++
++&mdss_mdp {
++        dsi_jd9365_800p_video: qcom,mdss_dsi_jd9365_800p_video {
++		qcom,mdss-dsi-panel-name = "JD9365 Starry&KD101n89 800P MDSS DSI";
++		qcom,mdss-dsi-panel-controller = <&mdss_dsi0>;
++		qcom,mdss-dsi-panel-type = "dsi_video_mode";
++		qcom,mdss-dsi-panel-framerate = <60>;
++		qcom,mdss-dsi-virtual-channel-id = <0>;
++		qcom,mdss-dsi-stream = <0>;
++		qcom,mdss-dsi-panel-width = <800>;
++		qcom,mdss-dsi-panel-height = <1280>;
++		qcom,mdss-dsi-h-front-porch = <18>;
++		qcom,mdss-dsi-h-back-porch = <18>;
++		qcom,mdss-dsi-h-pulse-width = <18>;
++		qcom,mdss-dsi-h-sync-skew = <0>;
++		qcom,mdss-dsi-v-back-porch = <4>;
++		qcom,mdss-dsi-v-front-porch = <16>;
++		qcom,mdss-dsi-v-pulse-width = <4>;
++		qcom,mdss-dsi-h-left-border = <0>;
++		qcom,mdss-dsi-h-right-border = <0>;
++		qcom,mdss-dsi-v-top-border = <0>;
++		qcom,mdss-dsi-v-bottom-border = <0>;
++		qcom,mdss-dsi-bpp = <24>;
++		qcom,mdss-dsi-underflow-color = <0xff>;
++		qcom,mdss-dsi-border-color = <0>;
++		qcom,mdss-dsi-on-command = [
++			05 01 00 00 78 00 01 11
++			05 01 00 00 05 00 01 29
++		];
++		qcom,mdss-dsi-off-command = [
++			23 01 00 00 00 00 02 83 00
++			23 01 00 00 78 00 02 84 00
++			05 01 00 00 78 00 02 10 00
++		];
++		qcom,mdss-dsi-on-command-state = "dsi_lp_mode";
++		qcom,mdss-dsi-off-command-state = "dsi_lp_mode";
++		//qcom,cont-splash-enabled;
++		qcom,mdss-dsi-h-sync-pulse = <1>;
++		qcom,mdss-dsi-traffic-mode = "burst_mode";
++		qcom,mdss-dsi-lane-map = "lane_map_0123";
++		qcom,mdss-dsi-bllp-eof-power-mode;
++		qcom,mdss-dsi-bllp-power-mode;
++		qcom,mdss-dsi-lane-0-state;
++		qcom,mdss-dsi-lane-1-state;
++		qcom,mdss-dsi-lane-2-state;
++		qcom,mdss-dsi-lane-3-state;
++		qcom,mdss-dsi-panel-timings = [f2 3a 28 00 6c 70 2c 3e 2e 03 04 00];
++		qcom,mdss-dsi-t-clk-post = <0x0e>;
++		qcom,mdss-dsi-t-clk-pre = <0x33>;
++		qcom,mdss-dsi-bl-min-level = <1>;
++		qcom,mdss-dsi-bl-max-level = <4095>;
++		qcom,panel-supply-entries = <&dsi_panel_pwr_supply>;
++		qcom,mdss-dsi-dma-trigger = "trigger_sw";
++		qcom,mdss-dsi-mdp-trigger = "none";
++		qcom,mdss-dsi-force-clock-lane-hs;
++		//qcom,platform-bklight-en-gpio = <&tlmm 46 0>;
++		//qcom,mdss-dsi-lcden-ctrl = <&tlmm 61 0>;
++		qcom,mdss-dsi-bl-pmic-control-type = "bl_ctrl_wled";
++		//qcom,mdss-dsi-bl-pmic-pwm-frequency = <100>;
++		//qcom,mdss-dsi-bl-pmic-bank-select = <0>;
++		//qcom,mdss-dsi-pwm-gpio = <&pm8953_mpps 4 0>;
++		qcom,mdss-pan-physical-width-dimension = <135>;
++		qcom,mdss-pan-physical-height-dimension = <216>;
++		//qcom,mdss-dsi-reset-sequence = <1 10>, <0 5>, <1 50>;
++		qcom,mdss-dsi-lp11-init;
++		qcom,mdss-dsi-post-init-delay = <1>;
++	};
++};
+diff --git a/arch/arm64/boot/dts/qcom/msm8953-mdss-panels.dtsi b/arch/arm64/boot/dts/qcom/msm8953-mdss-panels.dtsi
+index 7cef391446c8..47ae56cf79a7 100644
+--- a/arch/arm64/boot/dts/qcom/msm8953-mdss-panels.dtsi
++++ b/arch/arm64/boot/dts/qcom/msm8953-mdss-panels.dtsi
+@@ -30,7 +30,7 @@
+ #include "dsi-panel-inxnt51021-1200p-video.dtsi"
+ #include "dsi-panel-starry-800p-video.dtsi"
+ #include "dsi-panel-kd101n89-800p-video.dtsi"
+-
++#include "dsi-panel-jd9365-800p-video.dtsi"
+ &soc {
+ 	dsi_panel_pwr_supply: dsi_panel_pwr_supply {
+ 		#address-cells = <1>;
+@@ -220,3 +220,11 @@
+                 1f 1c 05 06 03 03 04 a0
+                 1f 10 05 06 03 03 04 a0];
+ };
++
++&dsi_jd9365_800p_video {
++        qcom,mdss-dsi-panel-timings-phy-v2 = [1f 1c 05 06 03 03 04 a0
++                1f 1c 05 06 03 03 04 a0
++                1f 1c 05 06 03 03 04 a0
++                1f 1c 05 06 03 03 04 a0
++                1f 10 05 06 03 03 04 a0];
++};
+-- 
+2.14.1
+
