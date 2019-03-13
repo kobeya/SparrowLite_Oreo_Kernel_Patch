@@ -1,0 +1,31 @@
+From 9e2a3e24de8bc4226ccf4e414a29601852b6e8e0 Mon Sep 17 00:00:00 2001
+From: kobey <xiong.yang@3nod.com.cn>
+Date: Wed, 13 Mar 2019 14:13:18 +0800
+Subject: [PATCH 4/4] audio i2c1 bug 1.High period of the SCL clock need > 4us
+ 2.Setup time for (repeated) START condition need > 4.7us 3.Setup time for
+ STOP condition need > 4.0us
+ -------------------------------------------------------- change i2c1 duty
+ cycle and fixed. (>4.79us now)
+
+Change-Id: I266d954cadc77a78a4124482a75dca600d475479
+Signed-off-by: kobey <xiong.yang@3nod.com.cn>
+---
+ arch/arm64/boot/dts/qcom/apq8053-lite-dragon.dtsi | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/qcom/apq8053-lite-dragon.dtsi b/arch/arm64/boot/dts/qcom/apq8053-lite-dragon.dtsi
+index 3cde9e9f1371..8d8115be89b3 100644
+--- a/arch/arm64/boot/dts/qcom/apq8053-lite-dragon.dtsi
++++ b/arch/arm64/boot/dts/qcom/apq8053-lite-dragon.dtsi
+@@ -236,6 +236,8 @@
+ };
+ 
+ &i2c_1 {
++	qcom,high-time-clk-div = <90>; /*duty cycle 50+*/
++	qcom,fs-clk-div = <96>;
+ 	status = "okay";
+ };
+ 
+-- 
+2.14.1
+
