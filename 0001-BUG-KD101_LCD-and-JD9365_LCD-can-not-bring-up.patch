@@ -1,0 +1,42 @@
+From b48d4af2363b2b19473d23a1cdfa392033deadd9 Mon Sep 17 00:00:00 2001
+From: kobey <xiong.yang@3nod.com.cn>
+Date: Wed, 10 Apr 2019 19:23:10 +0800
+Subject: [PATCH] BUG:KD101_LCD and JD9365_LCD can not bring up Fix:change
+ "qcom,ext_vdd-gpio" to "qcom,ext-vdd-gpio"
+
+Change-Id: I2ad5cb99e205dfbe31ac26da71c471fee18cd249
+Signed-off-by: kobey <xiong.yang@3nod.com.cn>
+---
+ arch/arm64/boot/dts/qcom/apq8053-lite-dragon-v2.2.3.dtsi | 2 +-
+ arch/arm64/boot/dts/qcom/apq8053-lite-dragon-v2.2.4.dtsi | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/arch/arm64/boot/dts/qcom/apq8053-lite-dragon-v2.2.3.dtsi b/arch/arm64/boot/dts/qcom/apq8053-lite-dragon-v2.2.3.dtsi
+index 3d2a591e5f08..629c4f911063 100644
+--- a/arch/arm64/boot/dts/qcom/apq8053-lite-dragon-v2.2.3.dtsi
++++ b/arch/arm64/boot/dts/qcom/apq8053-lite-dragon-v2.2.3.dtsi
+@@ -114,7 +114,7 @@
+ 
+ 	qcom,platform-te-gpio = <&tlmm 24 0>;
+ 	qcom,platform-reset-gpio = <&tlmm 61 0>;
+-	qcom,ext_vdd-gpio = <&tlmm 100 0>;
++	qcom,ext-vdd-gpio = <&tlmm 100 0>;
+ 	qcom,platform-bklight-en-gpio = <&tlmm 95 0>;
+ 
+ 	qcom,platform-lane-config = [00 00 ff 0f
+diff --git a/arch/arm64/boot/dts/qcom/apq8053-lite-dragon-v2.2.4.dtsi b/arch/arm64/boot/dts/qcom/apq8053-lite-dragon-v2.2.4.dtsi
+index 70b4e9c7cce1..23f1dc5e2902 100644
+--- a/arch/arm64/boot/dts/qcom/apq8053-lite-dragon-v2.2.4.dtsi
++++ b/arch/arm64/boot/dts/qcom/apq8053-lite-dragon-v2.2.4.dtsi
+@@ -114,7 +114,7 @@
+ 
+ 	qcom,platform-te-gpio = <&tlmm 24 0>;
+ 	qcom,platform-reset-gpio = <&tlmm 61 0>;
+-	qcom,ext_vdd-gpio = <&tlmm 100 0>;
++	qcom,ext-vdd-gpio = <&tlmm 100 0>;
+ 	qcom,platform-bklight-en-gpio = <&tlmm 95 0>;
+ 
+ 	qcom,platform-lane-config = [00 00 ff 0f
+-- 
+2.14.1
+
